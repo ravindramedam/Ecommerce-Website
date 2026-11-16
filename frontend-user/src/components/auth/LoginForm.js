@@ -34,9 +34,18 @@ export default function LoginForm() {
       return;
     }
 
+    const trimmed = email.trim();
+    const isPhone = /^[6-9]\d{9}$/.test(trimmed);
+    const isEmail = /^[^\s@]+@gmail\.com$/i.test(trimmed);
+    if (!isPhone && !isEmail) {
+      setError("Enter a valid Gmail address or 10-digit phone number.");
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await apiService.post('/users/login', { 
-        identifier: email, 
+        identifier: trimmed, 
         password 
       });
       const data = res.data; 
@@ -99,7 +108,7 @@ export default function LoginForm() {
         <form className="space-y-6" onSubmit={handleForgotSubmit}>
           <div>
             <label htmlFor="reset-identifier" className="block text-sm font-medium text-gray-700">
-              Email or Phone Number
+              Email or Phone Number<span className="text-black">*</span>
             </label>
             <div className="mt-1">
               <input
@@ -153,7 +162,7 @@ export default function LoginForm() {
       <form className="space-y-6" onSubmit={handleLoginSubmit} noValidate>
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-            Email address or Phone Number
+            Email address or Phone Number<span className="text-black">*</span>
           </label>
           <div className="mt-1">
             <input
@@ -169,9 +178,18 @@ export default function LoginForm() {
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-            Password
-          </label>
+          <div className="flex items-center justify-between gap-4">
+            <label htmlFor="password" className="text-sm font-medium text-gray-700">
+              Password<span className="text-black">*</span>
+            </label>
+            <button
+              type="button"
+              onClick={() => setIsForgotPasswordView(true)}
+              className="shrink-0 text-sm font-medium text-blue-600 hover:text-blue-500"
+            >
+              Forgot password?
+            </button>
+          </div>
           <div className="mt-1 relative"> 
             <input
               type={showPassword ? "text" : "password"}
@@ -200,19 +218,6 @@ export default function LoginForm() {
                 )}
               </button>
             </div>
-          </div>
-        </div>
-
-        {/* FORGOT PASSWORD LINK */}
-        <div className="flex items-center justify-between">
-          <div className="text-sm">
-            <button 
-                type="button"
-                onClick={() => setIsForgotPasswordView(true)}
-                className="font-medium text-blue-600 hover:text-blue-500"
-            >
-              Forgot your password?
-            </button>
           </div>
         </div>
 

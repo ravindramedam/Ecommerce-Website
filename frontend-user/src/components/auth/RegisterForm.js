@@ -13,11 +13,26 @@ const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{9,}$/;
 const passwordRuleMessage =
   "Password must be more than 8 characters and include at least one capital letter, one digit, and one special character.";
 
+function passwordWarning(value) {
+  if (!value) return "";
+
+  const missing = [];
+  if (value.length <= 8) missing.push("more than 8 characters");
+  if (!/[A-Z]/.test(value)) missing.push("a capital letter");
+  if (!/\d/.test(value)) missing.push("a number");
+  if (!/[^A-Za-z0-9]/.test(value)) missing.push("a special character");
+  if (missing.length === 0) return "";
+  if (missing.length === 1) return `Password needs ${missing[0]}`;
+
+  const last = missing.pop();
+  return `Password needs ${missing.join(", ")} and ${last}`;
+}
+
 export default function RegisterForm() {
   const { register } = useAuth();
 
   const [name, setName] = useState("");
-  const [identifier, setIdentifier] = useState(""); // email OR phone
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -26,6 +41,7 @@ export default function RegisterForm() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const warning = passwordWarning(password);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -36,7 +52,7 @@ export default function RegisterForm() {
       return;
     }
 
-    if (!phoneRegex.test(identifier) && !emailRegex.test(identifier)) {
+    if (!phoneRegex.test(identifier.trim()) && !emailRegex.test(identifier.trim())) {
       setError("Enter a valid Gmail address or 10-digit phone number");
       return;
     }
@@ -113,7 +129,7 @@ export default function RegisterForm() {
         {/* Identifier */}
         <div>
           <label htmlFor="identifier" className="block text-sm font-medium text-gray-700">
-            Email address or Phone Number
+            Email address or Phone Number<span className="text-black">*</span>
           </label>
           <input
             type="text"
@@ -129,7 +145,7 @@ export default function RegisterForm() {
         {/* Password */}
         <div>
           <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-            Password
+            Password<span className="text-black">*</span>
           </label>
           <div className="mt-1 relative">
             <input
@@ -138,7 +154,12 @@ export default function RegisterForm() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="block w-full text-gray-900 rounded-md border border-gray-300 px-3 py-2 pr-10 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              aria-invalid={warning ? "true" : "false"}
+              className={`block w-full text-gray-900 rounded-md border px-3 py-2 pr-10 shadow-sm sm:text-sm focus:outline-none ${
+                warning
+                  ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                  : "border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              }`}
             />
             <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
               <button
@@ -160,13 +181,20 @@ export default function RegisterForm() {
               </button>
             </div>
           </div>
-          <p className="mt-1 text-xs text-gray-500">{passwordRuleMessage}</p>
+          {warning && (
+            <p className="mt-1 flex items-start gap-1 text-sm text-red-600" role="alert">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true">
+                <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 6a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 6zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+              </svg>
+              <span>{warning}</span>
+            </p>
+          )}
         </div>
 
         {/* Confirm Password */}
         <div>
           <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-            Confirm Password
+            Confirm Password<span className="text-black">*</span>
           </label>
           <div className="mt-1 relative">
             <input

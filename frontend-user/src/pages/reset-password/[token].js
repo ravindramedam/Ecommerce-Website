@@ -30,8 +30,13 @@ export default function ResetPasswordPage() {
     setStatus({ loading: true, type: '', message: '' });
 
     // 1. Basic Validation
-    if (passwords.newPassword.length < 8) {
-      setStatus({ loading: false, type: 'error', message: 'Password must be at least 8 characters long.' });
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{9,}$/;
+    if (!passwordRegex.test(passwords.newPassword)) {
+      setStatus({
+        loading: false,
+        type: 'error',
+        message: 'Password must be more than 8 characters and include at least one capital letter, one digit, and one special character.',
+      });
       return;
     }
     if (passwords.newPassword !== passwords.confirmPassword) {
@@ -111,8 +116,8 @@ export default function ResetPasswordPage() {
                 
                 {/* New Password */}
                 <div>
-                  <label htmlFor="newPassword" class="block text-sm font-medium text-gray-700 mb-1">
-                    New Password
+                  <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                    New Password<span className="text-black">*</span>
                   </label>
                   <div className="relative">
                     <input
@@ -137,8 +142,8 @@ export default function ResetPasswordPage() {
 
                 {/* Confirm Password */}
                 <div>
-                  <label htmlFor="confirmPassword" class="block text-sm font-medium text-gray-700 mb-1">
-                    Confirm Password
+                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                    Confirm Password<span className="text-black">*</span>
                   </label>
                   <input
                     id="confirmPassword"

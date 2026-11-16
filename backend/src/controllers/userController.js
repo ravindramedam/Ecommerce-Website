@@ -65,8 +65,8 @@ exports.registerUser = async (req, res, next) => {
     return errorResponse(res, "Identifier and password are required", 400);
   }
 
-  // Checking wether the identifier is phone or email
-  let email, phone;
+  let email;
+  let phone;
   if (phoneRegex.test(identifier)) {
     phone = identifier;
   } else if (emailRegex.test(identifier)) {
@@ -84,7 +84,6 @@ exports.registerUser = async (req, res, next) => {
   }
 
   try {
-    // Checking existing user by email or phone
     if (email && (await User.findOne({ email }))) {
       return errorResponse(res, "User already exists with this email", 400);
     }
@@ -92,12 +91,7 @@ exports.registerUser = async (req, res, next) => {
       return errorResponse(res, "User already exists with this phone number", 400);
     }
 
-    // Creating user with either email or phone
-    const userData = {
-      name,
-      password,
-      role: "user",
-    };
+    const userData = { name, password, role: "user" };
     if (email) userData.email = email;
     if (phone) userData.phone = phone;
 
@@ -116,7 +110,7 @@ exports.registerUser = async (req, res, next) => {
   }
 };
 
-// User Login - Accepts either email or phone as identifier + password
+// User Login - email address or phone number, plus password
 exports.loginUser = async (req, res, next) => {
   const { identifier, password } = req.body;
 
@@ -125,8 +119,6 @@ exports.loginUser = async (req, res, next) => {
   }
 
   const lowerIdentifier = identifier.toLowerCase();
-
-  // Checkibg whether identifier is email or phone
   let query = {};
   if (phoneRegex.test(identifier)) {
     query.phone = identifier;
@@ -329,6 +321,14 @@ exports.resetPassword = async (req, res, next) => {
 
     if (!user) return errorResponse(res, "Invalid or expired token", 400);
 
+    if (!newPassword || !passwordRegex.test(newPassword)) {
+      return errorResponse(
+        res,
+        "Password must be more than 8 characters and include at least one capital letter, one digit, and one special character.",
+        400
+      );
+    }
+
     user.password = newPassword; 
     user.resetPasswordToken = undefined; 
     user.resetPasswordExpires = undefined;
@@ -336,37 +336,6 @@ exports.resetPassword = async (req, res, next) => {
     await user.save();
 
     return successResponse(res, "Password has been reset successfully. Please login.");
-
-  } catch (error) {
-    next(error);
-  }
-};
-
-exports.changePassword = async (req, res, next) => {
-  try {
-    const { oldPassword, newPassword } = req.body;
-    const user = await User.findById(req.user.id);
-
-    if (!user) return errorResponse(res, "User not found", 404);
-
-    if (!(await user.matchPassword(oldPassword))) {
-      return errorResponse(res, "Old password is incorrect", 400);
-    }
-
-    const isOldPassword = await Promise.all(
-      user.passwordHistory.map(async (oldPass) => bcrypt.compare(newPassword, oldPass))
-    );
-
-    if (isOldPassword.includes(true)) {
-      return errorResponse(res, "Password is already used in one of the last 3 passwords", 400);
-    }
-
-    user.passwordHistory = [user.password, ...user.passwordHistory.slice(0, 2)];
-    user.password = newPassword; 
-
-    await user.save();
-
-    return successResponse(res, "Password changed successfully");
 
   } catch (error) {
     next(error);
