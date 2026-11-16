@@ -24,14 +24,14 @@ export default function DashboardPage() {
       <Layout>
         <div className="min-h-[50vh] flex flex-col items-center justify-center text-center">
           <h2 className="text-xl font-semibold text-gray-700 mb-3">
-            You must be logged in to view your dashboard.
+            You must be signed in to view your dashboard.
           </h2>
 
           <Link
             href="/auth/login"
             className="px-5 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
           >
-            Login
+            Sign in
           </Link>
         </div>
       </Layout>

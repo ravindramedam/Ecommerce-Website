@@ -231,12 +231,18 @@ export default function Header({ showSidebarToggle = false }) {
                   </Link>
                </div>
             ) : (
-              <div className="flex items-center">
-                <Link href="/auth/login" className="text-blue-600 font-medium hover:underline">
-                  Login
+              <div className="flex items-center gap-3">
+                <Link
+                  href="/auth/login"
+                  className="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:text-blue-600"
+                >
+                  Sign in
                 </Link>
-                <Link href="/auth/register" className="ml-3 text-blue-600 font-medium hover:underline">
-                  Register
+                <Link
+                  href="/auth/register"
+                  className="inline-flex items-center rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700"
+                >
+                  Sign up
                 </Link>
               </div>
             )}

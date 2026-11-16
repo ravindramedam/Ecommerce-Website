@@ -142,7 +142,7 @@ export default function LoginForm() {
               }}
               className="w-full flex justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-gray-700 font-medium shadow-sm hover:bg-gray-50 sm:text-sm"
             >
-              Back to Login
+              Back to Sign in
             </button>
           </div>
         </form>
@@ -229,7 +229,7 @@ export default function LoginForm() {
               loading ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >
-            {loading ? "Logging in..." : "Login"}
+            {loading ? "Signing in..." : "Sign in"}
           </button>
         </div>
       </form>

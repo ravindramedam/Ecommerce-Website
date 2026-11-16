@@ -101,12 +101,12 @@ export default function ResetPasswordPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <p className="text-gray-500">You can now login with your new password.</p>
+              <p className="text-gray-500">You can now sign in with your new password.</p>
               <Link 
                 href="/auth/login"
                 className="inline-block w-full py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors"
               >
-                Go to Login
+                Go to Sign in
               </Link>
             </div>
           ) : (

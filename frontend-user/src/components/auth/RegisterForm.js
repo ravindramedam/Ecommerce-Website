@@ -4,7 +4,7 @@
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000/api";
 
 // Same regex logic as backend (UX consistency)
 const phoneRegex = /^[6-9]\d{9}$/;
@@ -90,7 +90,6 @@ export default function RegisterForm() {
         return;
       }
 
-      // backend returns { token, user }
       register(data.data.token, data.data.user);
     } catch (err) {
       setError("Unexpected server error");
@@ -234,7 +233,7 @@ export default function RegisterForm() {
             loading ? "opacity-50 cursor-not-allowed" : ""
           }`}
         >
-          {loading ? "Registering..." : "Register"}
+          {loading ? "Creating account..." : "Create account"}
         </button>
       </form>
     </div>

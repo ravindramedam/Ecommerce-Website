@@ -80,7 +80,7 @@ export default function Sidebar() {
                   👋
                 </div>
                 <h3 className="font-bold text-gray-800">Welcome!</h3>
-                <p className="text-xs text-gray-500 mt-1">Log in to track orders & view your profile.</p>
+                <p className="text-xs text-gray-500 mt-1">Sign in to track orders & view your profile.</p>
               </div>
 
               <nav className="space-y-3">
@@ -91,7 +91,7 @@ export default function Sidebar() {
                   className="flex items-center justify-center gap-2 w-full p-3 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 shadow-sm transition-all active:scale-95"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
-                  Login
+                  Sign in
                 </Link>
 
                  {/* Register Button */}

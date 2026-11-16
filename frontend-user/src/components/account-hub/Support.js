@@ -104,7 +104,7 @@ export default function Support() {
             </div>
 
             <p className="text-[10px] sm:text-sm text-purple-800 mb-3 sm:mb-4 leading-snug">
-              Facing issues with login, payments, or website errors?
+              Facing issues with sign-in, payments, or website errors?
             </p>
 
             {/* DEVELOPER CARD */}

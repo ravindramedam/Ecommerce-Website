@@ -17,7 +17,7 @@ export default function Profile() {
         <h3 className="font-bold text-lg mb-2">Welcome!</h3>
         <p className="text-sm mb-2">Please log in to view your profile.</p>
         <Link href="/auth/login" className="text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline">
-          Login or Register &rarr;
+          Sign in or Sign up &rarr;
         </Link>
       </div>
     );
