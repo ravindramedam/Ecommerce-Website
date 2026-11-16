@@ -8,7 +8,7 @@ const { sendVerificationOTP, sendPasswordResetEmail } = require("../services/ema
 // Validation regexes for matching certian criteria for inputs
 const phoneRegex = /^[6-9]\d{9}$/; // Phone numbers starting 6-9, 10 digits
 const emailRegex = /^[^\s@]+@gmail\.com$/i; // Gmail addresses only
-const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/; // Min 8 chars, alphanumeric, at least one digit and letter
+const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/; // Min 8 chars, at least one letter and one digit; symbols allowed
 
 // Send OTP for Email Verification
 exports.sendOTP = async (req, res, next) => {
@@ -78,7 +78,7 @@ exports.registerUser = async (req, res, next) => {
   if (!passwordRegex.test(password)) {
     return errorResponse(
       res,
-      "Password must be minimum 8 characters alphanumeric with at least one letter and one digit",
+      "Password must be at least 8 characters and include at least one letter and one digit. Symbols are allowed.",
       400
     );
   }
