@@ -1,5 +1,6 @@
 // backend/src/controllers/productController.js
 
+const mongoose = require("mongoose");
 const Product = require("../models/Product");
 const Category = require("../models/Category"); // <-- IMPORTED CATEGORY MODEL
 const { successResponse, errorResponse } = require("../middlewares/responseHandler");
@@ -206,6 +207,10 @@ exports.searchAndFilterProducts = async (req, res, next) => {
 // 7. Fetching a single product by its ID
 exports.getProductById = async (req, res, next) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return errorResponse(res, "Product not found", 404);
+    }
+
     const product = await Product.findById(req.params.id).populate("category", "name slug");
 
     if (!product) {

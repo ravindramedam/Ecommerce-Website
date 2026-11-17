@@ -11,21 +11,21 @@ const banners = [
     imageUrl: "/Banners/banner-1.png",
     alt: "Your Fashion Your Rules. Discover Unlimited Styles of Fashion",
     ctaText: "Explore",
-    ctaLink: "/products/new",
+    ctaLink: "/products?sortBy=newest",
   },
   {
     id: 2,
     imageUrl: "/Banners/banner-2.png",
     alt: "Seasonal Sale - Up to 65% Off",
     ctaText: "Shop Sale",
-    ctaLink: "/products/sale",
+    ctaLink: "/products?sortBy=topDiscounts",
   },
   {
     id: 3,
     imageUrl: "/Banners/banner-3.jpg",
     alt: "Men Style upto 30% Off",
     ctaText: "Shop Now",
-    ctaLink: "/products/new",
+    ctaLink: "/products?sortBy=newest",
   },
   {
     id: 4,
@@ -41,7 +41,7 @@ const banners = [
       "https://images.unsplash.com/photo-1551232864-3f0890e580d9?q=80&w=1974&auto=format&fit=crop",
     alt: "Mid-season sale",
     ctaText: "Shop The Sale",
-    ctaLink: "/products/sale",
+    ctaLink: "/products?sortBy=topDiscounts",
   },
   {
     id: 6,
@@ -49,7 +49,7 @@ const banners = [
       "https://images.unsplash.com/photo-1523381294911-8d3cead13475?q=80&w=2070&auto=format&fit=crop",
     alt: "New Arrivals Banner",
     ctaText: "Explore New In",
-    ctaLink: "/products/new",
+    ctaLink: "/products?sortBy=newest",
   },
 ];
 

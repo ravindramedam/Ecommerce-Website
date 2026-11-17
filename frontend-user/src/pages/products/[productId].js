@@ -18,27 +18,47 @@ export default function ProductDetailPage() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    if (productId) {
-      const fetchProduct = async () => {
-        try {
-          setLoading(true);
-          const response = await apiService.get(`/products/${productId}`);
-                    
-          const fetchedProduct = response.data.data.data;
-                    
-          setProduct(fetchedProduct);
+    if (!router.isReady) return;
 
-        } catch (err) {
-          console.error("Error fetching product:", err);
-          setError('Product not found or an error occurred.');
-        } finally {
-          setLoading(false);
-        }
-      };
-      
-      fetchProduct();
+    if (!productId) {
+      setLoading(false);
+      return;
     }
-  }, [productId]);
+
+    const isObjectId = /^[a-f\d]{24}$/i.test(productId);
+    if (!isObjectId) {
+      const destination = productId === "sale"
+        ? "/products?sortBy=topDiscounts"
+        : "/products?sortBy=newest";
+      router.replace(destination);
+      return;
+    }
+
+    const fetchProduct = async () => {
+      try {
+        setLoading(true);
+        setError("");
+        const response = await apiService.get(`/products/${productId}`);
+        const payload = response.data?.data;
+        const fetchedProduct = payload?.data ?? payload;
+
+        if (!fetchedProduct?._id) {
+          setProduct(null);
+          setError("Product not found or an error occurred.");
+          return;
+        }
+
+        setProduct(fetchedProduct);
+      } catch (err) {
+        console.error("Error fetching product:", err);
+        setError("Product not found or an error occurred.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [productId, router.isReady]);
 
   if (loading) {
     return <Layout><p className="text-center py-20">Loading product details...</p></Layout>;
