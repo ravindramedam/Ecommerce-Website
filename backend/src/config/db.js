@@ -64,7 +64,7 @@ function lookupWith(resolver) {
 
 const connectDB = async () => {
   const uri = process.env.MONGO_URI;
-
+  
   try {
     try {
       await mongoose.connect(uri, {});

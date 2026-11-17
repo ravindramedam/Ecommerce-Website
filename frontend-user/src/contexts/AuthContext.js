@@ -46,7 +46,10 @@ export function AuthProvider({ children }) {
         setIsLoggedIn(true);
         setIsFirstLogin(false);
       } catch (error) {
-        console.error("Auth initialization failed:", error);
+        const status = error?.response?.status;
+        if (status !== 401 && status !== 404) {
+          console.error("Auth initialization failed:", error?.message || "Request failed");
+        }
 
         localStorage.removeItem("token");
         setUser(null);

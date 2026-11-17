@@ -22,48 +22,42 @@ export default function OrderCard({ order, onOpenCancel, onOpenRequestView, show
     const currentIndex = steps.findIndex(s => s.key === status);
 
     return (
-      <div className="w-full flex justify-between items-center mt-3 sm:mt-4">
-
+      <div className="w-full grid grid-cols-4 mt-3 sm:mt-4">
         {steps.map((step, idx) => {
           const active = idx <= currentIndex;
           const isCurrent = idx === currentIndex;
+          const leftDone = idx > 0 && idx <= currentIndex;
+          const rightDone = idx < currentIndex;
 
           return (
-            <div key={step.key} className="flex-1 flex flex-col items-center">
+            <div key={step.key} className="relative flex flex-col items-center">
+              {idx > 0 && (
+                <div className={`absolute top-[5px] sm:top-2 left-0 right-1/2 h-0.5 ${leftDone ? "bg-blue-500" : "bg-gray-300"}`} />
+              )}
+              {idx < steps.length - 1 && (
+                <div className={`absolute top-[5px] sm:top-2 left-1/2 right-0 h-0.5 ${rightDone ? "bg-blue-500" : "bg-gray-300"}`} />
+              )}
 
-              {/* DOT */}
               <div
                 className={`
-                  rounded-full transition-all
-                  ${active ? (isCurrent ? "bg-blue-600 scale-110 animate-pulse" : "bg-blue-500") : "bg-gray-300"}
-                  w-2.5 h-2.5 xs:w-3 xs:h-3 sm:w-4 sm:h-4
+                  relative z-10 rounded-full transition-all
+                  ${active ? (isCurrent ? "bg-blue-600 scale-110" : "bg-blue-500") : "bg-gray-300"}
+                  w-2.5 h-2.5 sm:w-4 sm:h-4
                 `}
               />
 
-              {/* LABEL (always visible but scaled on mobile) */}
               <span
                 className={`
-                  mt-1 text-[8px] xs:text-[9px] sm:text-xs font-medium 
+                  mt-1 text-[8px] sm:text-xs font-medium text-center
                   ${active ? "text-blue-600" : "text-gray-500"}
+                  ${isCurrent ? "underline underline-offset-2" : ""}
                 `}
               >
                 {step.label}
               </span>
-
-              {/* CONNECTOR (skip last) */}
-              {idx < steps.length - 1 && (
-                <div
-                  className={`
-                    h-0.5 mt-1 
-                    ${active ? "bg-blue-400" : "bg-gray-300"}
-                    w-full max-w-[40px] xs:max-w-[50px] sm:max-w-[70px]
-                  `}
-                />
-              )}
             </div>
           );
         })}
-
       </div>
     );
   };
