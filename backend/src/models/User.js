@@ -74,10 +74,20 @@ const userSchema = new mongoose.Schema(
       type: Boolean, 
       default: false 
     }, 
+    isPhoneVerified: {
+      type: Boolean,
+      default: false
+    },
     otp: { 
       type: String
     }, 
     otpExpires: { 
+      type: Date
+    },
+    phoneOtp: {
+      type: String
+    },
+    phoneOtpExpires: {
       type: Date
     }, 
     resetPasswordToken: { 

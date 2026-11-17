@@ -42,6 +42,24 @@ export const verifyOtp = async (otp) => {
   }
 };
 
+export const sendPhoneOtp = async () => {
+  try {
+    const response = await apiService.post('/users/send-phone-otp');
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const verifyPhoneOtp = async (otp) => {
+  try {
+    const response = await apiService.post('/users/verify-phone-otp', { otp });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 // PUT: Change Password
 export const changePassword = async (passwords) => {
   try {

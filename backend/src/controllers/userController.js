@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const { successResponse, errorResponse } = require("../middlewares/responseHandler");
-const { sendVerificationOTP, sendPasswordResetEmail } = require("../services/emailServices");
+const { sendVerificationOTP, sendPasswordResetEmail, sendPhoneVerificationOTP } = require("../services/emailServices");
 
 // Validation regexes for matching certian criteria for inputs
 const phoneRegex = /^[6-9]\d{9}$/; // Phone numbers starting 6-9, 10 digits
@@ -52,6 +52,64 @@ exports.verifyOTP = async (req, res, next) => {
     await user.save();
 
     return successResponse(res, "Email verified successfully");
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Send a 6-digit OTP to the mobile number on the account.
+exports.sendPhoneOTP = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) return errorResponse(res, "User not found", 404);
+
+    const phone = String(req.body.phone || user.phone || "").trim();
+    if (!phoneRegex.test(phone)) {
+      return errorResponse(res, "Enter a valid 10-digit mobile number", 400);
+    }
+
+    const taken = await User.findOne({ phone, _id: { $ne: user._id } });
+    if (taken) return errorResponse(res, "This mobile number is already used by another account", 400);
+
+    const otp = String(Math.floor(100000 + Math.random() * 900000));
+    if (user.phone !== phone) {
+      user.phone = phone;
+      user.isPhoneVerified = false;
+    }
+    user.phoneOtp = otp;
+    user.phoneOtpExpires = Date.now() + 10 * 60 * 1000;
+    await user.save();
+
+    try {
+      await sendPhoneVerificationOTP(phone, otp);
+    } catch (error) {
+      return errorResponse(res, "The OTP could not be sent to your mobile number. Please try again.", 503);
+    }
+
+    return successResponse(res, "OTP sent to your mobile number");
+  } catch (err) {
+    next(err);
+  }
+};
+
+// The mobile number is verified only when the submitted code matches the texted OTP.
+exports.verifyPhoneOTP = async (req, res, next) => {
+  try {
+    const otp = String(req.body.otp || "").trim();
+    const user = await User.findById(req.user.id);
+    if (!user) return errorResponse(res, "User not found", 404);
+
+    const expired = !user.phoneOtpExpires || user.phoneOtpExpires < Date.now();
+    if (!otp || String(user.phoneOtp) !== otp || expired) {
+      return errorResponse(res, "Invalid or expired OTP", 400);
+    }
+
+    user.isPhoneVerified = true;
+    user.phoneOtp = null;
+    user.phoneOtpExpires = null;
+    await user.save();
+
+    return successResponse(res, "Mobile number verified successfully");
   } catch (err) {
     next(err);
   }
@@ -161,7 +219,8 @@ exports.getUserProfile = async (req, res, next) => {
       firstName: user.firstName || '', 
       lastName: user.lastName || '',   
       gender: user.gender || null,     
-      isVerified: user.isVerified,     
+      isVerified: user.isVerified,
+      isPhoneVerified: user.isPhoneVerified,
       email: user.email,
       phone: user.phone || null,
       alternatePhone: user.alternatePhone || null,
@@ -213,6 +272,7 @@ exports.updateProfile = async (req, res, next) => {
              return errorResponse(res, "This phone number is already associated with another account.", 400);
         }
         user.phone = phone;
+        user.isPhoneVerified = false;
     }
 
     // Updating other basic fields ---
@@ -231,7 +291,8 @@ exports.updateProfile = async (req, res, next) => {
             name: user.name,
             email: user.email,
             phone: user.phone,
-            isVerified: user.isVerified, 
+            isVerified: user.isVerified,
+            isPhoneVerified: user.isPhoneVerified, 
             gender: user.gender
         } 
     });
@@ -263,51 +324,66 @@ exports.assignRole = async (req, res, next) => {
 
 // Password Management
 // Forgot Password function (This generates the link to reset the password)
+
 exports.forgotPassword = async (req, res, next) => {
   try {
-    const { identifier } = req.body;
+      const { identifier } = req.body;
 
-    if (!identifier) {
-        return errorResponse(res, "Please provide your registered Email or Phone Number", 400);
-    }
+      if (!identifier) {
+          return errorResponse(
+              res,
+              "Please provide your registered Email or Phone Number",
+              400
+          );
+      }
 
-    let query = {};
+      let query = {};
 
-    if (phoneRegex.test(identifier)) {
-        query.phone = identifier;
-    } else if (emailRegex.test(identifier)) {
-        query.email = identifier.toLowerCase();
-    } else {
-        return errorResponse(res, "Invalid Email or Phone Number", 400);
-    }
+      if (phoneRegex.test(identifier)) {
+          query.phone = identifier;
+      } else if (emailRegex.test(identifier)) {
+          query.email = identifier.toLowerCase();
+      } else {
+          return errorResponse(res, "Invalid Email or Phone Number", 400);
+      }
 
-    const user = await User.findOne(query);
-    if (!user) return errorResponse(res, "User not found", 404);
+      const user = await User.findOne(query);
 
-    // If user entered phone, we still need an email to send the link.
-    if (!user.email) {
-        return errorResponse(res, "No email address linked to this phone number. Contact support.", 400);
-    }
+      if (!user) {
+          return errorResponse(res, "User not found", 404);
+      }
 
-    // Generate Token
-    const resetToken = crypto.randomBytes(32).toString("hex");
-    user.resetPasswordToken = resetToken;
-    user.resetPasswordExpires = Date.now() + 15 * 60 * 1000; // 15 min
-    await user.save();
+      if (!user.email) {
+          return errorResponse(
+              res,
+              "No email address linked to this phone number",
+              400
+          );
+      }
 
-    // Generate Link
-    const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+      const resetToken = crypto.randomBytes(32).toString("hex");
 
-    // --- Always send Email ---
-    // Regardless of whether they typed Email or Phone, we send to user.email
-    await sendPasswordResetEmail(user, resetUrl);
-    
-    return successResponse(res, `Password reset link sent to ${user.email}`);
+      user.resetPasswordToken = resetToken;
+      user.resetPasswordExpires = Date.now() + 15 * 60 * 1000;
+
+      await user.save();
+
+      const resetUrl =
+          `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+
+      await sendPasswordResetEmail(user, resetUrl);
+
+      return successResponse(
+          res,
+          `Password reset link sent to ${user.email}`
+      );
 
   } catch (error) {
-    next(error);
+      console.error("Forgot Password Error:", error);
+      next(error);
   }
 };
+
 
 // Reset Password function
 exports.resetPassword = async (req, res, next) => {

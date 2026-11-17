@@ -9,6 +9,8 @@ import {
   updateUserProfile,
   sendOtp,
   verifyOtp,
+  sendPhoneOtp,
+  verifyPhoneOtp,
   changePassword,
   forgotPassword
 } from '@/services/userService.js';
@@ -40,6 +42,10 @@ export default function ProfileInformation() {
   const [otp, setOtp] = useState('');
   const [verificationStatus, setVerificationStatus] = useState({ message: '', type: '' });
   const [timer, setTimer] = useState(0);
+  const [phoneOtpSent, setPhoneOtpSent] = useState(false);
+  const [phoneOtp, setPhoneOtp] = useState('');
+  const [phoneVerificationStatus, setPhoneVerificationStatus] = useState({ message: '', type: '' });
+  const [phoneTimer, setPhoneTimer] = useState(0);
 
   // Fetch profile
   const fetchProfile = useCallback(async () => {
@@ -91,6 +97,12 @@ export default function ProfileInformation() {
     if (timer > 0) interval = setInterval(() => setTimer(prev => prev - 1), 1000);
     return () => clearInterval(interval);
   }, [timer]);
+
+  useEffect(() => {
+    let interval;
+    if (phoneTimer > 0) interval = setInterval(() => setPhoneTimer(prev => prev - 1), 1000);
+    return () => clearInterval(interval);
+  }, [phoneTimer]);
 
   // --- Handlers ---
 
@@ -164,6 +176,38 @@ export default function ProfileInformation() {
       setOtpSent(false);
     } catch {
       setVerificationStatus({ message: 'Invalid OTP.', type: 'error' });
+    }
+  };
+
+  const handleSendPhoneOtp = async () => {
+    if (!user?.phone) {
+      setError("Please add a mobile number first.");
+      return;
+    }
+    if (phoneTimer > 0) return;
+
+    setPhoneVerificationStatus({ message: 'Sending OTP...', type: 'loading' });
+    try {
+      await sendPhoneOtp();
+      setPhoneOtpSent(true);
+      setPhoneTimer(60);
+      setPhoneVerificationStatus({ message: 'OTP sent to your mobile number!', type: 'success' });
+    } catch {
+      setPhoneVerificationStatus({ message: 'Failed to send OTP.', type: 'error' });
+    }
+  };
+
+  const handleVerifyPhoneOtp = async (e) => {
+    e.preventDefault();
+    setPhoneVerificationStatus({ message: 'Verifying...', type: 'loading' });
+    try {
+      await verifyPhoneOtp(phoneOtp);
+      setPhoneVerificationStatus({ message: 'Mobile number verified!', type: 'success' });
+      await fetchProfile();
+      setPhoneOtp('');
+      setPhoneOtpSent(false);
+    } catch {
+      setPhoneVerificationStatus({ message: 'Invalid OTP.', type: 'error' });
     }
   };
 
@@ -343,6 +387,9 @@ export default function ProfileInformation() {
               onChange={handleInputChange}
               className={inputClass}
             />
+            <p className="text-[9px] sm:text-xs text-gray-500 mt-1">
+              Changing mobile number will require re-verification.
+            </p>
           </div>
 
           {/* Buttons */}
@@ -401,11 +448,85 @@ export default function ProfileInformation() {
               </p>
             </div>
 
-            <div>
-              <p className="text-[10px] sm:text-xs font-medium text-gray-500">Phone</p>
-              <p className="mt-0.5 text-[11px] sm:text-base font-semibold text-gray-900">
-                {user?.phone || "-"}
-              </p>
+            <div className="sm:col-span-2 bg-gray-50 p-3 rounded">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+                <div>
+                  <p className="text-[10px] sm:text-xs font-medium text-gray-600">Mobile Number</p>
+                  {user?.phone ? (
+                    <p className="mt-0.5 text-[11px] sm:text-base font-semibold text-gray-900">
+                      {user.phone}
+                    </p>
+                  ) : (
+                    <p className="mt-0.5 text-[11px] sm:text-sm font-bold text-red-500">
+                      No mobile number linked!
+                    </p>
+                  )}
+                </div>
+
+                {user?.isPhoneVerified ? (
+                  <span className="mt-1 px-2 py-0.5 rounded-full bg-green-100 text-green-700 text-[9px] sm:text-xs font-semibold">
+                    Verified
+                  </span>
+                ) : !user?.phone ? (
+                  <button
+                    onClick={() => setIsEditMode(true)}
+                    className="mt-2 sm:mt-0 px-3 py-1 bg-blue-600 text-white rounded text-[10px] sm:text-sm hover:bg-blue-700"
+                  >
+                    Add Mobile
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleSendPhoneOtp}
+                    disabled={phoneTimer > 0}
+                    className={`mt-2 sm:mt-0 text-[10px] sm:text-sm font-medium ${
+                      phoneTimer > 0
+                        ? "text-gray-400"
+                        : "text-blue-600 hover:underline"
+                    }`}
+                  >
+                    {phoneTimer > 0 ? `Retry in ${phoneTimer}s` : "Verify Mobile"}
+                  </button>
+                )}
+              </div>
+
+              {phoneOtpSent && !user?.isPhoneVerified && (
+                <form
+                  onSubmit={handleVerifyPhoneOtp}
+                  className="mt-3 flex flex-col sm:flex-row gap-3"
+                >
+                  <div className="flex-1">
+                    <label className="block text-[10px] sm:text-xs font-medium text-gray-600 mb-1">
+                      Enter OTP Code
+                    </label>
+                    <input
+                      type="text"
+                      value={phoneOtp}
+                      onChange={(e) => setPhoneOtp(e.target.value)}
+                      maxLength={6}
+                      className={inputClass}
+                      placeholder="123456"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="py-1.5 px-4 bg-blue-600 text-white rounded text-[10px] sm:text-sm hover:bg-blue-700"
+                  >
+                    Verify
+                  </button>
+                </form>
+              )}
+
+              {phoneVerificationStatus.message && (
+                <p
+                  className={`mt-2 text-[10px] sm:text-xs font-semibold ${
+                    phoneVerificationStatus.type === "error"
+                      ? "text-red-600"
+                      : "text-green-700"
+                  }`}
+                >
+                  {phoneVerificationStatus.message}
+                </p>
+              )}
             </div>
 
             {/* Email Box */}

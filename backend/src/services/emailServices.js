@@ -6,9 +6,9 @@ const nodemailer = require("nodemailer");
 // TRANSPORTER
 // ============================================================
 const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false, // true for 465, false for other ports
+    
+    //port: 587,
+    //secure: false, // true for 465, false for other ports
     service: "gmail",
     auth: {
         user: process.env.EMAIL_USER,
@@ -41,29 +41,73 @@ const wrapEmailHTML = (title, bodyContent) => {
 };
 
 // Helper to send email
+
 const sendEmail = async (to, subject, html) => {
     try {
-        await transporter.sendMail({
-            from: `"Satya's Fashion Book" <${process.env.EMAIL_USER}>`, // Professional Sender Name
+        const info = await transporter.sendMail({
+            from: `"Satya's Fashion Book" <${process.env.EMAIL_USER}>`,
             to,
             subject,
             html,
         });
+
         console.log(`📩 Email sent to ${to}`);
+        console.log("Message ID:", info.messageId);
+
+        return info;
+
     } catch (error) {
         console.error(`❌ Failed to send email to ${to}:`, error);
+
+        throw error; // Important: propagate error to controller
     }
 };
+
 
 // ============================================================
 // SMS SENDER (Placeholder for Future Integration)
 // ============================================================
 // TODO: Integrate with an SMS service provider like Twilio, Fast2SMS, or MSG91 in the future
 const sendSMS = async (phone, message) => {
-    // TODO: Integrate Twilio, Fast2SMS, or MSG91 here in the future
-    if (process.env.NODE_ENV === 'development') {
-        console.log(`📱 [MOCK SMS] To: ${phone} | Msg: ${message}`);
+    const apiKey = process.env.FAST2SMS_API_KEY;
+    if (!apiKey) {
+        throw new Error("The OTP could not be sent to your mobile number.");
     }
+
+    const response = await fetch("https://www.fast2sms.com/dev/bulkV2", {
+        method: "POST",
+        headers: {
+            authorization: apiKey,
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            route: "q",
+            message,
+            language: "english",
+            numbers: phone,
+        }),
+    });
+
+    const data = await response.json().catch(() => ({}));
+    
+
+
+console.log("Fast2SMS HTTP Status:", response.status);
+console.log("Fast2SMS Response:", data);
+
+if (!response.ok || data.return === false) {
+    throw new Error(
+        data.message || "Fast2SMS failed to send SMS"
+    );
+}
+
+return data;
+
+};
+
+const sendPhoneVerificationOTP = async (phone, otp) => {
+    const message = `Your Satya's Fashion Book verification code is ${otp}. It is valid for 10 minutes.`;
+    await sendSMS(phone, message);
 };
 
 // ============================================================
@@ -488,6 +532,7 @@ module.exports = {
     sendEmail,
     wrapEmailHTML,
     sendSMS,
+    sendPhoneVerificationOTP,
     sendOrderNotifications,
     sendPasswordResetEmail,
     sendVerificationOTP,

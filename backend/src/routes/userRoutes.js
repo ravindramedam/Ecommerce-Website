@@ -2,6 +2,7 @@ const express = require("express");
 const {
   registerUser, loginUser,
   sendOTP, verifyOTP,
+  sendPhoneOTP, verifyPhoneOTP,
   forgotPassword, resetPassword, changePassword,
   getUserProfile, updateProfile,
   addAddress, setDefaultAddress, deleteAddress, getAddresses, updateAddress
@@ -21,7 +22,9 @@ router.put("/profile", protect, updateProfile);
 
 // Email Verification Routes
 router.post("/send-otp", protect, sendOTP); 
-router.post("/verify-otp", protect, verifyOTP);   
+router.post("/verify-otp", protect, verifyOTP);
+router.post("/send-phone-otp", protect, sendPhoneOTP);
+router.post("/verify-phone-otp", protect, verifyPhoneOTP);   
 
 // Password Management Routes
 router.post("/forgot-password", forgotPassword);
