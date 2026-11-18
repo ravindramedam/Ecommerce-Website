@@ -6,6 +6,7 @@ import { UIProvider } from "@/contexts/UIContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { Toaster } from "react-hot-toast";
 import { WishlistProvider } from "@/contexts/WishlistContext";
+import ChatWidget from "@/components/chat/ChatWidget";
 
 export default function App({ Component, pageProps }) {
   return (
@@ -16,6 +17,7 @@ export default function App({ Component, pageProps }) {
             <Toaster position="top-right" reverseOrder={false} /> 
               <WishlistProvider>
                 <Component {...pageProps} />
+                <ChatWidget />
               </WishlistProvider>
           </CartProvider>
         </UIProvider>

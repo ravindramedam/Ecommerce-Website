@@ -9,6 +9,7 @@ const wishlistRoutes = require("./routes/wishlistRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
+const chatRoutes = require("./routes/chatRoutes");
 
 const errorHandler = require("./middlewares/errorHandler");
 const { successResponse, errorResponse } = require("./middlewares/responseHandler");
@@ -29,6 +30,7 @@ app.use("/api/wishlist", wishlistRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/chat", chatRoutes);
 
 // test route
 app.get("/", (req, res) => {
