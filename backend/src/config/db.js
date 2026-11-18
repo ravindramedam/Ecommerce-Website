@@ -62,8 +62,19 @@ function lookupWith(resolver) {
   };
 }
 
+function applyDatabaseName(uri) {
+  const dbName = process.env.DB_NAME;
+  if (!uri || !dbName) return uri;
+
+  const parsed = new URL(uri);
+  if (parsed.pathname && parsed.pathname !== "/") return uri;
+
+  parsed.pathname = `/${dbName}`;
+  return parsed.toString();
+}
+
 const connectDB = async () => {
-  const uri = process.env.MONGO_URI;
+  const uri = applyDatabaseName(process.env.MONGO_URI);
   
   try {
     try {

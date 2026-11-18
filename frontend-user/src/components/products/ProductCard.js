@@ -142,7 +142,7 @@ export default function ProductCard({ product }) {
             <div className={`flex items-baseline gap-1.5 flex-wrap transition-all duration-500 ${revealDeal ? "opacity-60 scale-95 origin-left" : "opacity-100"}`}>
                 
                 {/* Selling Price */}
-                <span className={`font-bold text-sm sm:text-lg transition-colors duration-500 ${revealDeal ? "text-red-400 line-through decoration-red-500" : "text-gray-900"}`}>
+                <span className={`font-bold text-sm sm:text-lg text-black transition-colors duration-500 ${revealDeal ? "line-through decoration-black" : ""}`}>
                   ₹{price.toFixed(0)}
                 </span>
 
@@ -155,7 +155,7 @@ export default function ProductCard({ product }) {
 
                 {/* ORANGE PERCENTAGE (Standard Discount) */}
                 {standardDiscountPercentage > 0 && (
-                  <span className="text-[10px] sm:text-xs font-bold text-orange-500 truncate">
+                  <span className="text-[10px] sm:text-xs font-bold text-green-600 truncate">
                     ({standardDiscountPercentage}% OFF)
                   </span>
                 )}
@@ -167,7 +167,7 @@ export default function ProductCard({ product }) {
                   overflow-hidden transition-all duration-500 ease-out flex items-center gap-2
                   ${revealDeal ? "max-h-10 opacity-100 mt-0.5" : "max-h-0 opacity-0"}
               `}>
-                  <span className="text-lg sm:text-xl font-bold text-blue-600 leading-none">
+                  <span className="text-lg sm:text-xl font-bold text-black leading-none">
                     ₹{finalPrice.toFixed(0)}
                   </span>
                   
@@ -194,7 +194,7 @@ export default function ProductCard({ product }) {
             <button
               className={`
                 flex-1 py-1.5 rounded text-[10px] sm:text-xs font-bold shadow-sm transition-colors
-                ${isInCart ? "bg-green-600 text-white" : "bg-blue-600 text-white hover:bg-blue-700"}
+                ${isInCart ? "bg-green-600 text-white" : "bg-white text-black border border-gray-300 hover:bg-gray-50"}
               `}
               onClick={handleAddToCart}
               disabled={isUpdating}
@@ -203,7 +203,7 @@ export default function ProductCard({ product }) {
             </button>
 
             <button
-              className="flex-1 py-1.5 rounded text-[10px] sm:text-xs font-bold shadow-sm transition-colors bg-orange-500 text-white hover:bg-orange-600 disabled:opacity-70"
+              className="flex-1 py-1.5 rounded text-[10px] sm:text-xs font-bold shadow-sm transition-colors bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-70"
               onClick={handleBuyNow}
               disabled={isUpdating || isBuying}
             >

@@ -84,7 +84,7 @@ export default function ProductInfo({ product }) {
         {/* ROW 1: Standard Price */}
         <div className={`flex items-baseline gap-3 transition-all duration-500 ease-in-out ${revealDeal ? "opacity-60 scale-95 origin-left" : "opacity-100"}`}>
           
-          <span className={`text-3xl font-bold transition-colors duration-500 ${revealDeal ? "text-red-400 line-through decoration-red-500 decoration-2" : "text-blue-600"}`}>
+          <span className={`text-3xl font-bold text-black transition-colors duration-500 ${revealDeal ? "line-through decoration-black decoration-2" : ""}`}>
             ₹{price.toFixed(0)}
           </span>
           
@@ -93,7 +93,7 @@ export default function ProductInfo({ product }) {
           )}
           
           {discountPercentage > 0 && (
-            <span className="text-lg font-bold text-orange-500">({discountPercentage}% OFF)</span>
+            <span className="text-lg font-bold text-green-600">({discountPercentage}% OFF)</span>
           )}
         </div>
 
@@ -108,7 +108,7 @@ export default function ProductInfo({ product }) {
             <div className="flex items-center gap-3">
               
               {/* Final Price */}
-              <span className="text-4xl font-bold text-blue-600 leading-none">
+              <span className="text-4xl font-bold text-black leading-none">
                 ₹{finalPrice.toFixed(0)}
               </span>
 

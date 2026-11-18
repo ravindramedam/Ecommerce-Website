@@ -113,13 +113,13 @@ export default function Support() {
 
               <div>
                 <p className="text-[9px] sm:text-xs uppercase text-gray-500 font-bold">Developer / Techie</p>
-                <p className="font-semibold text-gray-800 text-[11px] sm:text-base">Ravi. B</p>
+                <p className="font-semibold text-gray-800 text-[11px] sm:text-base">Medam Ravindra</p>
 
                 <div className="flex flex-col text-[10px] sm:text-sm mt-1 gap-1">
-                  <a href="tel:9010076453" className="text-purple-600 hover:underline">9010076453</a>
-                  <a href="mailto:boddapatiravi447@gmail.com"
-                     className="text-gray-500 hover:text-purple-600 text-[9px] sm:text-xs">
-                    boddapatiravi447@gmail.com
+                  <a href="tel:7013491552" className="text-black-600 hover:underline">7013491552</a>
+                  <a href="mailto:ravindramedam321@gmail.com"
+                     className="text-black-500 hover:text-black-600 text-[9px] sm:text-xs">
+                    ravindramedam321@gmail.com
                   </a>
                 </div>
               </div>

@@ -281,7 +281,7 @@ export default function ProductActions({ product }) {
           className={`flex-1 py-3 px-6 font-bold rounded-lg shadow-md transition-all disabled:opacity-70 disabled:cursor-not-allowed ${
             showGoToCart
               ? 'bg-gray-800 text-white hover:bg-gray-900' 
-              : 'bg-white text-blue-600 border-2 border-blue-600 hover:bg-blue-50'
+              : 'bg-white text-black border border-gray-300 hover:bg-gray-50'
           }`}
         >
           {isUpdating && !isBuyingNow && !showGoToCart
@@ -296,7 +296,7 @@ export default function ProductActions({ product }) {
         <button
           onClick={handleBuyNow}
           disabled={isUpdating} 
-          className="flex-1 py-3 px-6 bg-orange-500 text-white font-bold rounded-lg shadow-md hover:bg-orange-600 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+          className="flex-1 py-3 px-6 bg-blue-600 text-white font-bold rounded-lg shadow-md hover:bg-blue-700 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
         >
           {isBuyingNow ? 'Processing...' : 'Buy Now'}
         </button>

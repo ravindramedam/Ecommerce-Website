@@ -106,7 +106,7 @@ export default function Terms() {
         <p className="text-[10px] sm:text-sm">
           For queries:<br/>
           <strong>Ravi Boddapati</strong><br/>
-          Phone: 9010076453<br/>
+          Phone: 7013491552<br/>
           Tadithota Jeevan Junction, Rajahmundry.
         </p>
 

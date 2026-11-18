@@ -132,7 +132,7 @@ function MiniProductCard({ product }) {
         
         {/* PRICE ROW */}
         <div className="flex items-center gap-1 flex-wrap min-h-[14px]">
-          <span className="text-blue-600 font-bold text-[10px]">
+          <span className="text-black font-bold text-[10px]">
             ₹{price}
           </span>
           
@@ -143,7 +143,7 @@ function MiniProductCard({ product }) {
           )}
           
           {discount > 0 && (
-            <span className="text-red-500 text-[8px] font-semibold">
+            <span className="text-green-600 text-[8px] font-semibold">
               {discount}% OFF
             </span>
           )}
@@ -155,8 +155,8 @@ function MiniProductCard({ product }) {
           {/* ADD BUTTON */}
           <button
             className={`
-              flex-1 text-white text-[9px] py-1.5 rounded font-semibold shadow-sm active:scale-95 transition
-              ${isInCart ? "bg-green-600" : "bg-blue-600"}
+              flex-1 text-[9px] py-1.5 rounded font-semibold shadow-sm active:scale-95 transition
+              ${isInCart ? "bg-green-600 text-white" : "bg-white text-black border border-gray-300"}
             `}
             onClick={handleAddToCart}
             disabled={isUpdating}
@@ -166,7 +166,7 @@ function MiniProductCard({ product }) {
 
           {/* BUY BUTTON */}
           <button
-            className="flex-1 bg-orange-500 text-white text-[9px] py-1.5 rounded font-semibold shadow-sm active:scale-95 transition disabled:opacity-70"
+            className="flex-1 bg-blue-600 text-white text-[9px] py-1.5 rounded font-semibold shadow-sm active:scale-95 transition disabled:opacity-70"
             onClick={handleBuyNow}
             disabled={isUpdating || isBuying}
           >
